@@ -1,0 +1,43 @@
+.search-btn {
+    color: rgb(10, 104, 255);
+}
+
+.search-btn:hover {
+    background-color: rgba(10, 104, 255, 0.2);
+}
+
+.search-btn::before {
+    content: "";
+    display: block;
+    position: absolute;
+    border: 1px solid rgb(221, 221, 227);
+    height: 26px;
+    left: 0;
+
+}
+
+.homepage:hover {
+
+    background-color: rgba(0, 96, 255, 0.12);
+}
+
+.account:hover {
+    background-color: rgba(39, 39, 42, 0.12);
+}
+
+.btn-cart:hover {
+    background-color: rgba(0, 96, 255, 0.12);
+}
+
+.btn-cart::before {
+    content: "";
+    display: block;
+    position: absolute;
+    height: 20px;
+    border: 1px solid rgb(221, 221, 227);
+    left: -10px;
+}
+
+.icon-color {
+    color: #0060ff;
+}
