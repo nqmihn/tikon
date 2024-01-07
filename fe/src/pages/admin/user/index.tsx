@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import type { TableProps } from 'antd';
-import { Space, Table, Select, Button, Dropdown } from 'antd';
+import { Space, Table, Select, Button, Dropdown, Popconfirm, message } from 'antd';
 import type { ColumnsType } from 'antd/es/table/interface';
-import { getAllUser, getUserById } from '../../../services/apiService';
+import { deleteUser, getAllUser, getUserById } from '../../../services/apiService';
 import Loading from '../../../components/Loading';
 import { IAxiosResponse } from '../../../utils/type/axiosResponse';
 import { MdDelete } from "react-icons/md";
@@ -11,11 +11,13 @@ import UserDetail from '../../../components/Admin/UserDetail';
 import { IUserDetail } from '../../../utils/type/user';
 import { GoPlus } from "react-icons/go";
 import CreateUserModal from '../../../components/Admin/CreateUser';
-import { DownloadOutlined } from '@ant-design/icons';
+import { DownloadOutlined, WarningOutlined } from '@ant-design/icons';
 import ImportUser from '../../../components/Admin/ImportUser';
 import { CiExport } from "react-icons/ci";
 import * as XLSX from "xlsx"
 import type { MenuProps } from 'antd';
+import UpdateUser from '../../../components/Admin/UpdateUser';
+import { MdEdit } from "react-icons/md";
 
 type IListUser = {
     _id: string;
@@ -37,7 +39,8 @@ const ManageUser = () => {
     const [showUserDetail, setShowUserDetail] = useState(false)
     const [showCreateUser, setShowCreateUser] = useState(false)
     const [showImportUser, setShowImportUser] = useState(false)
-    const [userData, setUserData] = useState<IUserDetail>()
+    const [showUpdateUser, setShowUpdateUser] = useState(false)
+    const [userData, setUserData] = useState<IUserDetail | undefined>()
     const columns: ColumnsType<IListUser> = [
         {
             title: 'Id',
@@ -76,7 +79,18 @@ const ManageUser = () => {
                 <Space size="middle">
                     <div className='flex gap-3'>
                         <button onClick={() => handleClickShowDetail(record._id)}><FaEye className="text-xl hover:text-primary" /></button>
-                        <button><MdDelete className="text-xl hover:text-red-600" /></button>
+                        <Popconfirm
+                            title="Delete User"
+                            description="Are you sure to delete this user?"
+                            okText="Confirm"
+                            cancelText="Cancel"
+                            okButtonProps={{
+                                className: "bg-primary"
+                            }}
+                            onConfirm={() => handleDeleteUser(record._id, record.email)}
+                        > <button><MdDelete className="text-xl hover:text-red-600" /></button>
+                        </Popconfirm>
+                        <button onClick={() => handleClickUpdate(record._id)}><MdEdit className="text-xl hover:text-yellow-400" /></button>
                     </div>
 
                 </Space>
@@ -129,12 +143,20 @@ const ManageUser = () => {
             </div>
         </>
     }
+
     const handleClickShowDetail = async (_id: string) => {
         const res = await getUserById(_id)
         if (res.data) {
             setUserData(res.data)
         }
         setShowUserDetail(true)
+    }
+    const handleClickUpdate = async (_id: string) => {
+        const res = await getUserById(_id)
+        if (res.data) {
+            setUserData(res.data)
+        }
+        setShowUpdateUser(true)
     }
     const fetchListUser = async () => {
         setLoading(true)
@@ -170,7 +192,19 @@ const ManageUser = () => {
     const onSortChange = (value: number) => {
         setSort(value)
     }
-
+    const handleDeleteUser = async (_id: string, email: string) => {
+        if (email === "admin@gmail.com") {
+            message.error("Can't delete this user")
+            return
+        }
+        const res: IAxiosResponse = await deleteUser(_id)
+        if (res.data) {
+            message.success("Delete User Succeed!")
+        } else if (res.error) {
+            message.error(res.error ?? "Something wrong happen!")
+        }
+        fetchListUser()
+    }
     return <>
         <Space style={{ marginBottom: 16 }}>
         </Space>
@@ -223,6 +257,7 @@ const ManageUser = () => {
         <UserDetail isOpen={showUserDetail} setClose={() => setShowUserDetail(false)} userData={userData} />
         <CreateUserModal isShow={showCreateUser} onCancel={() => setShowCreateUser(false)} fetchListUser={fetchListUser} />
         <ImportUser isOpen={showImportUser} setClose={() => setShowImportUser(false)} fetchListUser={fetchListUser} />
+        <UpdateUser isOpen={showUpdateUser} setClose={() => setShowUpdateUser(false)} userData={userData} />
     </>
 }
 export default ManageUser

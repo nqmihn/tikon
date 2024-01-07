@@ -14,3 +14,10 @@ export type IPostCreateManyUser = {
     role: string;
     password: string;
 }
+export type IUpdateUser = {
+    _id: string;
+    email: string;
+    name: string;
+    phoneNumber: string;
+    address?: string
+}

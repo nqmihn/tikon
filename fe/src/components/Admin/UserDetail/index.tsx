@@ -12,7 +12,6 @@ const UserDetail = (props: UserDetailProps) => {
     const { isOpen, setClose, userData } = props
     const onClose = () => {
         setClose()
-        console.log(userData)
 
     }
     const items: DescriptionsProps['items'] = [

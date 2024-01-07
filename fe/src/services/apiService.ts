@@ -1,5 +1,5 @@
 import axios from "../utils/axios";
-import { IPostCreateManyUser } from "../utils/type/user";
+import { IPostCreateManyUser, IUpdateUser } from "../utils/type/user";
 
 const postRegister = (email: string, name: string, password: string, address: string, phoneNumber: string) => {
     return axios.post("/api/v1/auth/register", { email, name, password, address, phoneNumber })
@@ -28,6 +28,16 @@ const postCreateUser = (email: string, password: string, name: string, phoneNumb
 const postCreateManyUser = (data: IPostCreateManyUser[]) => {
     return axios.post('/api/v1/user/bulk', data)
 }
+const putUpdateUser = (data: IUpdateUser) => {
+    return axios.put('/api/v1/user', data)
+}
+const deleteUser = (_id: string) => {
+    return axios.delete('/api/v1/user', {
+        data: {
+            _id
+        }
+    })
+}
 export {
     postRegister,
     postLogin,
@@ -36,5 +46,7 @@ export {
     getAllUser,
     getUserById,
     postCreateUser,
-    postCreateManyUser
+    postCreateManyUser,
+    putUpdateUser,
+    deleteUser
 }
